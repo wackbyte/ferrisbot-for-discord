@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Error};
+use anyhow::{anyhow, bail, Error};
 use poise::serenity_prelude as serenity;
 use poise::serenity_prelude::Timestamp;
 
@@ -262,6 +262,72 @@ pub async fn selftimeout(
 		then.unix_timestamp()
 	))
 	.await?;
+
+	Ok(())
+}
+
+/// Pin a message in a thread or forum post.
+///
+/// /pin <message>
+///
+/// Allows the creator of a thread to pin messages in it.
+#[poise::command(
+	prefix_command,
+	slash_command,
+	category = "Utilities",
+	on_error = "crate::helpers::acknowledge_fail"
+)]
+pub async fn pin(
+	ctx: Context<'_>,
+	#[description = "Message link or ID to pin"] message: serenity::Message,
+) -> Result<(), Error> {
+	let channel = ctx
+		.guild_channel()
+		.await
+		.ok_or(anyhow!("This command can only be used in a guild"))?;
+
+	let owner_id = channel.owner_id.ok_or(anyhow!(
+		"This command can only be used in a thread or forum post"
+	))?;
+
+	if owner_id != message.author.id {
+		bail!("This command can only be used by the creator of the thread or forum post");
+	}
+
+	channel.pin(ctx, message).await?;
+
+	Ok(())
+}
+
+/// Unpin a message in a thread or forum post.
+///
+/// /unpin <message>
+///
+/// Allows the creator of a thread to unpin messages in it.
+#[poise::command(
+	prefix_command,
+	slash_command,
+	category = "Utilities",
+	on_error = "crate::helpers::acknowledge_fail"
+)]
+pub async fn unpin(
+	ctx: Context<'_>,
+	#[description = "Message link or ID to unpin"] message: serenity::Message,
+) -> Result<(), Error> {
+	let channel = ctx
+		.guild_channel()
+		.await
+		.ok_or(anyhow!("This command can only be used in a guild"))?;
+
+	let owner_id = channel.owner_id.ok_or(anyhow!(
+		"This command can only be used in a thread or forum post"
+	))?;
+
+	if owner_id != message.author.id {
+		bail!("This command can only be used by the creator of the thread or forum post");
+	}
+
+	channel.unpin(ctx, message).await?;
 
 	Ok(())
 }
