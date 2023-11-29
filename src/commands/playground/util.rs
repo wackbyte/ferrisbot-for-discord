@@ -283,13 +283,10 @@ pub async fn send_reply(
 		retry_pressed.defer(&ctx).await?;
 		ctx.rerun().await?;
 	} else {
-		/*
 		// If timed out, just remove the button
 		response
-			// TODO: Add code to remove button
-			.edit(ctx, |create_reply| create_reply)
+			.edit(ctx, poise::CreateReply::default().components(Vec::new()))
 			.await?;
-		*/
 	}
 
 	Ok(())
