@@ -177,7 +177,9 @@ async fn create_modmail_thread(
 	let modmail_thread = modmail_channel
 		.create_thread(
 			ctx,
-			serenity::CreateThread::new(modmail_name).invitable(false),
+			serenity::CreateThread::new(modmail_name)
+				.kind(serenity::ChannelType::PrivateThread)
+				.invitable(false),
 		)
 		.await?;
 
