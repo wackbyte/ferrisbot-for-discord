@@ -26,10 +26,11 @@ pub async fn procmacro(
 
 	let mut generated_code = format!(
 		stringify!(
-			const MACRO_CODE: &str = r#####"{}"#####;
-			const USAGE_CODE: &str = r#####"{}"#####;
+			const MACRO_CODE: &str = "{}";
+			const USAGE_CODE: &str = "{}";
 		),
-		macro_code, usage_code
+		macro_code.escape_default(),
+		usage_code.escape_default()
 	);
 	generated_code += r#"
 pub fn cmd_run(cmd: &str) {
